@@ -59,5 +59,6 @@ export function getExistingPath(
       return p;
     }
   }
+
   return null;
 }
