@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a31953c44fa5eac616d97cd1b206c2f7>>
+ * @generated SignedSource<<320e69fa54228a352fad210e3a43b947>>
  */
 
 /**
@@ -76,8 +76,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
-  bool enableFixForParentTagDuringReparenting(jsi::Runtime& runtime);
-
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
@@ -114,6 +112,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableViewRecycling(jsi::Runtime& runtime);
 
+  bool enableViewRecyclingForScrollView(jsi::Runtime& runtime);
+
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
@@ -144,6 +144,8 @@ class NativeReactNativeFeatureFlags
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
 
+  bool sweepActiveTouchOnChildNativeGesturesAndroid(jsi::Runtime& runtime);
+
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
@@ -167,6 +169,8 @@ class NativeReactNativeFeatureFlags
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
   bool useTurboModules(jsi::Runtime& runtime);
+
+  double virtualViewHysteresisRatio(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };

@@ -32,10 +32,7 @@ Pod::Spec.new do |s|
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_Fabric'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "React_Fabric")
 
   s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"
@@ -149,6 +146,7 @@ Pod::Spec.new do |s|
     ss.source_files         = podspec_sources("react/renderer/scheduler/**/*.{m,mm,cpp,h}", "react/renderer/scheduler/**/*.h")
     ss.header_dir           = "react/renderer/scheduler"
 
+    ss.dependency             "React-performancecdpmetrics"
     ss.dependency             "React-performancetimeline"
     ss.dependency             "React-Fabric/observers/events"
   end

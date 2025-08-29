@@ -34,7 +34,7 @@
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.1.0",
+    "react": "19.1.1",
     "react-native": "*"
   },
   "codegenConfig": {
@@ -58,9 +58,9 @@
     }
   },
   "devDependencies": {
-    "@react-native-community/cli": "20.0.0-alpha.0",
-    "@react-native-community/cli-platform-android": "20.0.0-alpha.0",
-    "@react-native-community/cli-platform-ios": "20.0.0-alpha.0",
+    "@react-native-community/cli": "20.0.0",
+    "@react-native-community/cli-platform-android": "20.0.0",
+    "@react-native-community/cli-platform-ios": "20.0.0",
     "commander": "^12.0.0",
     "listr2": "^6.4.1",
     "rxjs": "npm:@react-native-community/rxjs@6.5.4-custom"

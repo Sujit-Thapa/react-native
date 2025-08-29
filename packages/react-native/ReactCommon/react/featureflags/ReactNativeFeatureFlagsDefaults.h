@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ca0c460a5b96f0cb8555054d24c8c2c>>
+ * @generated SignedSource<<a76f1a1e8ba0d65b689b4b87d33d7ced>>
  */
 
 /**
@@ -107,12 +107,8 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableFixForParentTagDuringReparenting() override {
-    return false;
-  }
-
   bool enableFontScaleChangesUpdatingLayout() override {
-    return false;
+    return true;
   }
 
   bool enableIOSTextBaselineOffsetPerLine() override {
@@ -183,6 +179,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableViewRecyclingForScrollView() override {
+    return false;
+  }
+
   bool enableViewRecyclingForText() override {
     return true;
   }
@@ -243,6 +243,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool sweepActiveTouchOnChildNativeGesturesAndroid() override {
+    return false;
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -260,11 +264,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeEqualsInNativeReadableArrayAndroid() override {
-    return false;
+    return true;
   }
 
   bool useNativeTransformHelperAndroid() override {
-    return false;
+    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
@@ -276,7 +280,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRawPropsJsiValue() override {
-    return false;
+    return true;
   }
 
   bool useShadowNodeStateOnClone() override {
@@ -289,6 +293,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useTurboModules() override {
     return false;
+  }
+
+  double virtualViewHysteresisRatio() override {
+    return 0.0;
   }
 
   double virtualViewPrerenderRatio() override {

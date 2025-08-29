@@ -16,7 +16,7 @@ let BUILD_FROM_SOURCE = true
  To build React Native, you need to follow these steps:
  1. inside the `react-native` root folder, run `yarn install`
  2. `cd packages/react-native`
- 3. `RN_DEP_VERSION=nightly HERMES_VERSION=nightly node scripts/prebuild-ios`
+ 3. `RN_DEP_VERSION=nightly HERMES_VERSION=nightly node scripts/ios-prebuild`
  4. `open Package.swift`
  5. Build in Xcode.
 
@@ -89,7 +89,10 @@ let reactDebug = RNTarget(
 let jsi = RNTarget(
   name: .jsi,
   path: "ReactCommon/jsi",
-  excludedPaths: ["jsi/test", "CMakeLists.txt", "jsi/CMakeLists.txt"],
+  // JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rule.
+  // Precompiled binaries are only supported with hermes - so we can safely exclude the jsi.cpp file.
+  // https://github.com/facebook/react-native/issues/53257
+  excludedPaths: ["jsi/test", "jsi/jsi.cpp", "CMakeLists.txt", "jsi/CMakeLists.txt"],
   dependencies: [.reactNativeDependencies]
 )
 
@@ -211,6 +214,14 @@ let reactHermes = RNTarget(
   defines: [
     CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
   ]
+)
+
+/// React-performancecdpmetrics.podspec
+let reactPerformanceCdpMetrics = RNTarget(
+  name: .reactPerformanceCdpMetrics,
+  path: "ReactCommon/react/performance/cdpmetrics",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .jsi, .reactPerformanceTimeline, .reactRuntimeExecutor]
 )
 
 /// React-performancetimeline.podspec
@@ -423,51 +434,25 @@ let reactFabricModal = RNTarget(
   name: .reactFabricModal,
   path: "ReactCommon/react/renderer/components/modal",
   excludedPaths: [
-    "platform/android",
-    "platform/cxx",
-  ],
-  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
-)
-
-let reactFabricSafeAreaView = RNTarget(
-  name: .reactFabricSafeAreaView,
-  path: "ReactCommon/react/renderer/components/safeareaview",
-  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
-)
-
-let reactFabricTextLayoutManager = RNTarget(
-  name: .reactFabricTextLayoutManager,
-  path: "ReactCommon/react/renderer/textlayoutmanager",
-  excludedPaths: [
-    "platform/android",
-    "platform/cxx",
-    "platform/windows",
-    "platform/macos",
-    "tests",
+    "components/modal/platform/android",
+    "components/modal/platform/cxx",
+    "components/view/platform/android",
+    "components/view/platform/windows",
+    "components/view/platform/macos",
+    "components/switch/iosswitch/react/renderer/components/switch/MacOSSwitchShadowNode.mm",
+    "components/textinput/platform/android",
+    "components/text/platform/android",
+    "components/textinput/platform/macos",
+    "components/text/tests",
+    "textlayoutmanager/tests",
+    "textlayoutmanager/platform/android",
+    "textlayoutmanager/platform/cxx",
+    "textlayoutmanager/platform/windows",
+    "textlayoutmanager/platform/macos",
+    "conponents/rncore", // this was the old folder where RN Core Components were generated. If you ran codegen in the past, you might have some files in it that might make the build fail.
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: [".", "platform/ios"]
-)
-
-let reactFabricText = RNTarget(
-  name: .reactFabricText,
-  path: "ReactCommon/react/renderer/components/text",
-  excludedPaths: [
-    "platform/android",
-    "tests",
-  ],
-  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactFabricTextLayoutManager],
-  sources: [".", "platform/cxx"]
-)
-
-let reactFabricTextInput = RNTarget(
-  name: .reactFabricTextInput,
-  path: "ReactCommon/react/renderer/components/textinput",
-  excludedPaths: [
-    "platform/android",
-  ],
-  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactFabricTextLayoutManager],
-  sources: [".", "platform/ios"]
+  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "components/virtualviewexperimental", "textlayoutmanager", "textlayoutmanager/platform/ios", "components/switch/iosswitch"]
 )
 
 /// React-FabricImage.podspec
@@ -606,6 +591,7 @@ let targets = [
   reactNativeDependencies,
   hermesPrebuilt,
   reactJsiTooling,
+  reactPerformanceCdpMetrics,
   reactPerformanceTimeline,
   reactRuntimeScheduler,
   rctTypesafety,
@@ -783,6 +769,7 @@ extension String {
   static let hermesPrebuilt = "hermes-prebuilt"
 
   static let reactJsiTooling = "React-jsitooling"
+  static let reactPerformanceCdpMetrics = "React-performancecdpmetrics"
   static let reactPerformanceTimeline = "React-performancetimeline"
   static let reactRuntimeScheduler = "React-runtimescheduler"
   static let rctTypesafety = "RCTTypesafety"

@@ -50,28 +50,32 @@ private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
 internal class VirtualViewContainerState {
 
   private val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
-  private val detectWindowFocus = ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()
 
   private val virtualViews: MutableSet<VirtualView> = mutableSetOf()
   private val emptyRect: Rect = Rect()
   private val visibleRect: Rect = Rect()
   private val prerenderRect: Rect = Rect()
   private val onWindowFocusChangeListener =
-      ViewTreeObserver.OnWindowFocusChangeListener {
-        debugLog("onWindowFocusChanged")
-        updateModes()
+      if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
+        ViewTreeObserver.OnWindowFocusChangeListener {
+          debugLog("onWindowFocusChanged")
+          updateModes()
+        }
+      } else {
+        null
       }
+
   private val scrollView: ViewGroup
 
   constructor(scrollView: ViewGroup) {
     this.scrollView = scrollView
-    if (detectWindowFocus) {
+    if (onWindowFocusChangeListener != null) {
       scrollView.viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
   }
 
   public fun cleanup() {
-    if (detectWindowFocus) {
+    if (onWindowFocusChangeListener != null) {
       scrollView.viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
   }
@@ -100,10 +104,20 @@ internal class VirtualViewContainerState {
 
   private fun updateModes(virtualView: VirtualView? = null) {
     scrollView.getDrawingRect(visibleRect)
+
+    // This happens because ScrollView content isn't ready yet. The danger here is if ScrollView
+    // intentionally goes but curently ScrollView and v1 Fling use this check to determine if
+    // "content ready"
+    if (visibleRect.isEmpty()) {
+      debugLog("updateModes", { "scrollView visibleRect is empty" })
+      return
+    }
+
     prerenderRect.set(visibleRect)
     prerenderRect.inset(
         (-prerenderRect.width() * prerenderRatio).toInt(),
-        (-prerenderRect.height() * prerenderRatio).toInt())
+        (-prerenderRect.height() * prerenderRatio).toInt(),
+    )
 
     val virtualViewsIt = if (virtualView != null) listOf(virtualView) else virtualViews
     virtualViewsIt.forEach { vv ->
@@ -112,10 +126,9 @@ internal class VirtualViewContainerState {
       var mode = VirtualViewMode.Hidden
       var thresholdRect = emptyRect
       when {
-        rect.isEmpty -> {}
         rectsOverlap(rect, visibleRect) -> {
           thresholdRect = visibleRect
-          if (detectWindowFocus) {
+          if (onWindowFocusChangeListener != null) {
             if (scrollView.hasWindowFocus()) {
               mode = VirtualViewMode.Visible
             } else {
@@ -134,7 +147,8 @@ internal class VirtualViewContainerState {
 
       debugLog(
           "updateModes",
-          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" })
+          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" },
+      )
       vv.onModeChange(mode, thresholdRect)
     }
   }

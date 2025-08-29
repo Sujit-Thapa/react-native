@@ -9,6 +9,7 @@
 
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceEntryReporterListeners.h"
 #include "PerformanceObserverRegistry.h"
 
 #include <folly/dynamic.h>
@@ -67,11 +68,10 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType,
       const std::string& entryName);
 
-  HighResTimeStamp getCurrentTimeStamp() const;
-
-  void setTimeStampProvider(std::function<HighResTimeStamp()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
+  void addEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
+  void removeEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
 
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
@@ -100,11 +100,12 @@ class PerformanceEntryReporter {
       UserTimingDetailProvider&& detailProvider = nullptr);
 
   void reportEvent(
-      std::string name,
+      const std::string& name,
       HighResTimeStamp startTime,
       HighResDuration duration,
       HighResTimeStamp processingStart,
       HighResTimeStamp processingEnd,
+      HighResTimeStamp taskEndTime,
       uint32_t interactionId);
 
   void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
@@ -132,7 +133,9 @@ class PerformanceEntryReporter {
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  std::function<HighResTimeStamp()> timeStampProvider_ = nullptr;
+  mutable std::shared_mutex listenersMutex_;
+  std::vector<PerformanceEntryReporterEventTimingListener*>
+      eventTimingListeners_{};
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
@@ -149,8 +152,9 @@ class PerformanceEntryReporter {
         return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
@@ -167,8 +171,9 @@ class PerformanceEntryReporter {
         return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   void traceMark(

@@ -43,8 +43,7 @@ UIDeviceOrientation RCTDeviceOrientation(void);
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
 {
-  NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
-  return rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  return YES;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
@@ -409,6 +408,18 @@ CGSize RCTViewportSize(void)
 {
   UIWindow *window = RCTKeyWindow();
   return window ? window.bounds.size : RCTScreenSize();
+}
+
+CGSize RCTSwitchSize(void)
+{
+  static CGSize rctSwitchSize;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    });
+  });
+  return rctSwitchSize;
 }
 
 CGFloat RCTRoundPixelValue(CGFloat value)

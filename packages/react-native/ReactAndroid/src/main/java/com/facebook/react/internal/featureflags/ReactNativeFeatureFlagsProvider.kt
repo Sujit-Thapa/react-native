@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<afd38d105b3b7ab92f98f39dbce40925>>
+ * @generated SignedSource<<dfbd5e84392f1fda0e68324582c328b2>>
  */
 
 /**
@@ -63,8 +63,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
-  @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
-
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
@@ -101,6 +99,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
 
+  @DoNotStrip public fun enableViewRecyclingForScrollView(): Boolean
+
   @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
@@ -131,6 +131,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
+  @DoNotStrip public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean
+
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
@@ -154,6 +156,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip public fun useTurboModules(): Boolean
+
+  @DoNotStrip public fun virtualViewHysteresisRatio(): Double
 
   @DoNotStrip public fun virtualViewPrerenderRatio(): Double
 }

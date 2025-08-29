@@ -54,14 +54,14 @@ export type PerformanceObserverInit = {
 
 export interface Spec extends TurboModule {
   +now: () => number;
-  +reportMark?: (name: string, startTime: number, entry: mixed) => void;
-  +reportMeasure?: (
+  +reportMark: (name: string, startTime: number, entry: mixed) => void;
+  +reportMeasure: (
     name: string,
     startTime: number,
     duration: number,
     entry: mixed,
   ) => void;
-  +getMarkTime?: (name: string) => ?number;
+  +getMarkTime: (name: string) => ?number;
   +clearMarks: (entryName?: string) => void;
   +clearMeasures: (entryName?: string) => void;
   +getEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
@@ -93,8 +93,7 @@ export interface Spec extends TurboModule {
 
   +getSupportedPerformanceEntryTypes: () => $ReadOnlyArray<RawPerformanceEntryType>;
 
-  +setCurrentTimeStampForTesting?: (timeStamp: number) => void;
-  +clearEventCountsForTesting?: () => void;
+  +clearEventCountsForTesting: () => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);

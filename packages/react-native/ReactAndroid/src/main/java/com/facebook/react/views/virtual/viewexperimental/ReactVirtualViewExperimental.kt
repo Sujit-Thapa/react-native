@@ -32,6 +32,8 @@ public class ReactVirtualViewExperimental(context: Context) :
   internal var renderState: VirtualViewRenderState = VirtualViewRenderState.Unknown
 
   private var scrollView: VirtualViewContainer? = null
+
+  private val lastContainerRelativeRect: Rect = Rect()
   override val containerRelativeRect: Rect = Rect()
   private var offsetX: Int = 0
   private var offsetY: Int = 0
@@ -52,8 +54,9 @@ public class ReactVirtualViewExperimental(context: Context) :
     // after. If called after, we need to report the updated layout to the VirtualViewContainer
     if (hadLayout) {
       updateParentOffset()
-      reportChangeToContainer()
+      reportRectChangeToContainer()
     }
+    debugLog("doAttachedToWindow")
   }
 
   /** From [View#onLayout] */
@@ -68,7 +71,8 @@ public class ReactVirtualViewExperimental(context: Context) :
           right + offsetX,
           bottom + offsetY,
       )
-      reportChangeToContainer()
+      debugLog("onLayout") { "containerRelativeRect=$containerRelativeRect" }
+      reportRectChangeToContainer()
     }
   }
 
@@ -82,12 +86,25 @@ public class ReactVirtualViewExperimental(context: Context) :
       oldLeft: Int,
       oldTop: Int,
       oldRight: Int,
-      oldBottom: Int
+      oldBottom: Int,
   ) {
     if (oldLeft != left || oldTop != top) {
       updateParentOffset()
-      reportChangeToContainer()
+      debugLog("onLayoutChange") { "containerRelativeRect=$containerRelativeRect" }
+      reportRectChangeToContainer()
     }
+  }
+
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    containerRelativeRect.set(
+        left + offsetX,
+        top + offsetY,
+        right + offsetX,
+        bottom + offsetY,
+    )
+    debugLog("onSizeChanged") { "container=$containerRelativeRect" }
+    reportRectChangeToContainer()
   }
 
   override fun onDetachedFromWindow() {
@@ -102,15 +119,19 @@ public class ReactVirtualViewExperimental(context: Context) :
     mode = null
     modeChangeEmitter = null
     hadLayout = false
+    lastContainerRelativeRect.setEmpty()
     containerRelativeRect.setEmpty()
   }
 
   override val virtualViewID: String
     get() {
-      return "${nativeId ?: "unknown"}:${id}"
+      return "${nativeId ?: "unknown"}:::${id}"
     }
 
   override fun onModeChange(newMode: VirtualViewMode, thresholdRect: Rect) {
+    modeChangeEmitter ?: return
+    scrollView ?: return
+
     if (newMode == mode) {
       return
     }
@@ -125,7 +146,11 @@ public class ReactVirtualViewExperimental(context: Context) :
         if (renderState == VirtualViewRenderState.Unknown) {
           // Feature flag is disabled, so use the former logic.
           modeChangeEmitter?.emitModeChange(
-              VirtualViewMode.Visible, containerRelativeRect, thresholdRect, synchronous = true)
+              VirtualViewMode.Visible,
+              containerRelativeRect,
+              thresholdRect,
+              synchronous = true,
+          )
         } else {
           // If the previous mode was prerender and the result of dispatching that event was
           // committed, we do not need to dispatch an event for visible.
@@ -133,19 +158,31 @@ public class ReactVirtualViewExperimental(context: Context) :
               oldMode == VirtualViewMode.Prerender && renderState == VirtualViewRenderState.Rendered
           if (!wasPrerenderCommitted) {
             modeChangeEmitter?.emitModeChange(
-                VirtualViewMode.Visible, containerRelativeRect, thresholdRect, synchronous = true)
+                VirtualViewMode.Visible,
+                containerRelativeRect,
+                thresholdRect,
+                synchronous = true,
+            )
           }
         }
       }
       VirtualViewMode.Prerender -> {
         if (oldMode != VirtualViewMode.Visible) {
           modeChangeEmitter?.emitModeChange(
-              VirtualViewMode.Prerender, containerRelativeRect, thresholdRect, synchronous = false)
+              VirtualViewMode.Prerender,
+              containerRelativeRect,
+              thresholdRect,
+              synchronous = false,
+          )
         }
       }
       VirtualViewMode.Hidden -> {
         modeChangeEmitter?.emitModeChange(
-            VirtualViewMode.Hidden, containerRelativeRect, thresholdRect, synchronous = false)
+            VirtualViewMode.Hidden,
+            containerRelativeRect,
+            thresholdRect,
+            synchronous = false,
+        )
       }
     }
   }
@@ -170,8 +207,13 @@ public class ReactVirtualViewExperimental(context: Context) :
     )
   }
 
-  private fun reportChangeToContainer() {
+  private fun reportRectChangeToContainer() {
+    if (lastContainerRelativeRect == containerRelativeRect) {
+      debugLog("reportRectChangeToContainer") { "no rect change $containerRelativeRect" }
+      return
+    }
     scrollView?.virtualViewContainerState?.onChange(this)
+    lastContainerRelativeRect.set(containerRelativeRect)
   }
 
   private fun getScrollView(): VirtualViewContainer? = traverseParentStack(true)
@@ -204,7 +246,7 @@ public class ReactVirtualViewExperimental(context: Context) :
 
   internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
     if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-      FLog.d("$DEBUG_TAG:$subtag", "${block()} [$id][$nativeId]")
+      FLog.d("$DEBUG_TAG:[$virtualViewID]:$subtag", "${block()}")
     }
   }
 }

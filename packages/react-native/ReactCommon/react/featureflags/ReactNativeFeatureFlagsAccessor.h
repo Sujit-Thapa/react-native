@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2281d2471c8f55a0e04d223aabb846c7>>
+ * @generated SignedSource<<f1eb31a7412bff743a5c581224d71e2a>>
  */
 
 /**
@@ -52,7 +52,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableEagerRootViewAttachment();
   bool enableFabricLogs();
   bool enableFabricRenderer();
-  bool enableFixForParentTagDuringReparenting();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
@@ -71,6 +70,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableResourceTimingAPI();
   bool enableViewCulling();
   bool enableViewRecycling();
+  bool enableViewRecyclingForScrollView();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
   bool enableVirtualViewDebugFeatures();
@@ -86,6 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool releaseImageDataWhenConsumed();
   bool shouldPressibilityUseW3CPointerEventsForHover();
   bool skipActivityIdentityAssertionOnHostPause();
+  bool sweepActiveTouchOnChildNativeGesturesAndroid();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
@@ -98,6 +99,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useShadowNodeStateOnClone();
   bool useTurboModuleInterop();
   bool useTurboModules();
+  double virtualViewHysteresisRatio();
   double virtualViewPrerenderRatio();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -110,7 +112,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 67> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 69> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -132,7 +134,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
-  std::atomic<std::optional<bool>> enableFixForParentTagDuringReparenting_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
@@ -151,6 +152,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableResourceTimingAPI_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
+  std::atomic<std::optional<bool>> enableViewRecyclingForScrollView_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
@@ -166,6 +168,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> releaseImageDataWhenConsumed_;
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
+  std::atomic<std::optional<bool>> sweepActiveTouchOnChildNativeGesturesAndroid_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
@@ -178,6 +181,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
+  std::atomic<std::optional<double>> virtualViewHysteresisRatio_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };
 

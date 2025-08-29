@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<23d0b6132cde79fd2e82e329aec3ba97>>
+ * @generated SignedSource<<34c12f5a31aab5bfb874953f1beefef1>>
  */
 
 /**
@@ -151,12 +151,6 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
-   * This feature flag enables a fix for reparenting fix in differentiator
-   */
-  @JvmStatic
-  public fun enableFixForParentTagDuringReparenting(): Boolean = accessor.enableFixForParentTagDuringReparenting()
-
-  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   @JvmStatic
@@ -265,6 +259,12 @@ public object ReactNativeFeatureFlags {
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
 
   /**
+   * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForScrollView(): Boolean = accessor.enableViewRecyclingForScrollView()
+
+  /**
    * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
    */
   @JvmStatic
@@ -355,6 +355,12 @@ public object ReactNativeFeatureFlags {
   public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
 
   /**
+   * A flag to tell Fabric to sweep active touches from JSTouchDispatcher in Android when a child native gesture is started.
+   */
+  @JvmStatic
+  public fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = accessor.sweepActiveTouchOnChildNativeGesturesAndroid()
+
+  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   @JvmStatic
@@ -425,6 +431,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModules(): Boolean = accessor.useTurboModules()
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  @JvmStatic
+  public fun virtualViewHysteresisRatio(): Double = accessor.virtualViewHysteresisRatio()
 
   /**
    * Initial prerender ratio for VirtualView.
